@@ -1,0 +1,63 @@
+# 学习笔记
+
+## 服务器配置
+    Q：nginx配置vue单页应用时页面刷新出现404错误问题
+    A：location / {
+		rewrite .* /index.html break;
+        或者使用
+         try_files $uri $uri/ /index.html; 
+		root /data/build;//该部分为文件根目录。
+    }
+
+    Q:如何安装第二个PHP版本
+    A：第一步
+        首先先下载要安装的版本，如7.2版本的到官网下载。
+        下载完成之后进行解压 tar zxvf php-7.2.tar.gz
+        解压完成之后进入文件夹进行下面代码操作
+        ./configure --prefix=/usr/local/php72 --with-curl --with-freetype-dir --with-gd --with-gettext --with-iconv-dir --with-kerberos --with-libdir=lib64 --with-libxml-dir --with-mysql --with-mysqli --with-openssl --with-pcre-regex --with-pdo-mysql --with-pdo-sqlite --with-pear --with-png-dir --with-xmlrpc --with-xsl --with-zlib --enable-fpm --enable-bcmath --enable-libxml --enable-inline-optimization --enable-gd-native-ttf --enable-mbregex --enable-mbstring --enable-pcntl --enable-shmop --enable-soap --enable-sockets --enable-sysvsem --enable-xml --enable-zip
+
+        第二步
+        进行make && make install
+        完成后进行 php.ini复制操作
+
+        cp php.ini-production /usr/local/php72/lib/php.ini
+
+        复制完之后对php.config文件进行配置。
+        分别对php-fpm.config.default和www.config.default文件进行复制和修改
+
+       回到解压版本的目录运行
+       cp ./sapi/fpm/init.d.php-fpm /etc/init.d/php72-fpm
+      作用是复制启动命令
+       chmod +x /etc/init.d/php72-fpm 加权限；
+
+      /etc/init.d/php72-fpm start 开启
+      /etc/init.d/php72-fpm stop 停止
+      /etc/init.d/php72-fpm restart 重启
+
+      注意需要修改php72.config中的内容端口监听修改成9001或者其他的，避免和老版本冲突。
+      同时 nginx中端口号也应改为 修改后的端口
+      如我监听的端口号是 9006
+      nginx配置文件中是
+      location ~ \.php { 
+        root /mnt/tested/;
+        fastcgi_pass 127.0.0.1:9006; 
+        fastcgi_index index.php; 
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name; 
+        include fastcgi_params; 
+        fastcgi_split_path_info ^(.+\.php)(.*)$;
+        fastcgi_param PATH_INFO $fastcgi_path_info; 
+      }
+
+      Q:nginx中如何配置pathinfo形式的路由
+
+      A: 在对应的conf文件下加入
+          location /{
+            if (!-e $request_filename){
+              rewrite ^(.*)$ /index.php?s=$1 last; break;
+            }
+         }
+
+
+
+
+
