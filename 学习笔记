@@ -58,6 +58,76 @@
          }
 
 
+## 安装PHP运行环境 
 
+一键安装所有编译工具 gcc：
+yum groupinstall "Development Tools" "Server Platform Development" -y
+
+Yum添加 Epel源
+下载Nginx wget http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
+
+执行以下命令，建立nginx的yum仓库。
+rpm -ivh nginx-release-centos-7-0.el7.ngx.noarch.rpm
+
+执行以下命令，安装nginx。
+yum -y install nginx
+
+
+安装MySQL。
+依次执行以下命令，安装MySQL。
+rpm -Uvh http://dev.mysql.com/get/mysql57-community-release-el7-8.noarch.rpm
+
+yum -y install mysql-community-server
+
+依次执行以下命令，启动MySQL服务并设置开机自启动。
+systemctl start mysqld  启动MySQL
+
+systemctl enable mysqld 设置开机自启
+
+grep 'temporary password' /var/log/mysqld.log  执行以下命令，获取安装MySQL时自动设置的root用户密码。
+
+mysql_secure_installation   加固MySQL   一路Y
+
+安装PHP版本7.3
+
+
+yum install -y php73-php-fpm php73-php-cli php73-php-bcmath php73-php-gd php73-php-json php73-php-mbstring php73-php-mcrypt php73-php-mysqlnd php73-php-opcache php73-php-pdo php73-php-pecl-crypto php73-php-pecl-mcrypt php73-php-pecl-geoip php73-php-recode php73-php-snmp php73-php-soap php73-php-xmll php73-php-pecl-swoole4 php73-php-pecl-ssh2 php73-php-pecl-redis4 php73-php-pecl-memcached
+
+systemctl enable php73-php-fpm 设置开机自启
+
+systemctl start php73-php-fpm 启动php
+
+rpm -qa | grep 'php'  查找安装包
+
+rpm -ql php73-php-fpm-7.3.6-1.el7.remi.x86_64 找到：php73-php-fpm-7.3.6-1.el7.remi.x86_64安装位置
+
+find /etc/opt/remi/php73 -name php.ini 查找php.ini位置：
+
+
+编辑/etc/opt/remi/php73/php.ini替换换 ;cgi.fix_pathinfo=1
+
+systemctl restart php73-php-fpm #重启
+systemctl start php73-php-fpm #启动
+systemctl stop php73-php-fpm #关闭
+systemctl status php73-php-fpm #检查状态
+
+
+使用yum源安装使用以下方式启动服务
+
+Nginx服务
+
+systemctl start nginx   启动Nginx  
+
+systemctl stop nginx   停止Nginx
+
+systemctl restart nginx   重启Nginx
+
+MySQL服务：
+
+systemctl start mysqld   启动MySQL
+
+systemctl stop mysqld   停止MySQL
+
+systemctl restart mysqld   重启MySQL
 
 
